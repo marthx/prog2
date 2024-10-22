@@ -48,12 +48,18 @@ def sphere_volume_parallel1(n,d,np):
 # parallel code - parallelize actual computations by splitting data
 def sphere_volume_parallel2(n,d,np):
     #   Determines the size of np equal sets of points from n 
+    
     sample_size = n//np
-    with future.ProcessPoolExecutor() as ex:
+    """ with future.ProcessPoolExecutor() as ex:
         #   Applies the function to np chunks of data created.
         ps = [ex.submit(sphere_volume, sample_size, d) for _ in range(np)]
         results = [p.result() for p in ps]
         
+    return sum(results)/len(results) """
+    with future.ProcessPoolExecutor() as ex:
+        results = ex.map(sphere_volume, [sample_size for _ in range(np)], [d for _ in range(np)])
+    results = list(results)
+    
     return sum(results)/len(results)
     
      
